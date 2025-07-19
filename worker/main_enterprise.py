@@ -158,7 +158,7 @@ def burn_subtitles_with_ffmpeg(input_video, ass_file, output_video):
     cmd = [
         'ffmpeg', 
         '-i', str(input_video),
-        '-vf', f"subtitles={str(ass_file)}",
+        '-vf', f"subtitles='{str(ass_file)}'",
     ]
     
     # Try VideoToolbox acceleration on macOS
@@ -296,7 +296,8 @@ def main():
             except:
                 clip_duration = None
             
-            timing_optimizer = TimingOptimizer()
+            # Use conservative timing optimization for karaoke (disable gap merging to prevent overlaps)
+            timing_optimizer = TimingOptimizer(gap_merge_threshold=0.0)  # Disable gap merging
             optimized_words = timing_optimizer.optimize_timing(filtered_words, clip_duration)
             print(f"Timing optimization completed", flush=True)
             

@@ -273,12 +273,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         return text
     
     def _escape_ass_text(self, text: str) -> str:
-        """Escape special characters for ASS format."""
+        """Escape special characters for ASS format - ONLY for word text, not karaoke tags."""
         if not isinstance(text, str):
             text = str(text)
         
-        # Escape ASS special characters
-        text = text.replace('\\\\', '\\\\\\\\')
+        # Only escape curly braces that could interfere with override tags
+        # DO NOT escape backslashes - they're needed for karaoke tags
         text = text.replace('{', '\\\\{')
         text = text.replace('}', '\\\\}')
         
