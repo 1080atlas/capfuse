@@ -34,3 +34,10 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Large model files
+models/ggml-base.bin
+
+# Python cache
+__pycache__/
+*.pyc
