@@ -135,7 +135,7 @@ Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour,
             return color
     
     def _generate_events(self, words: List[Dict], style_config: Dict) -> str:
-        """Generate ASS events with karaoke timing (ChatGPT Approach A)."""
+        """Generate ASS events with proper libass karaoke format."""
         events_header = """[Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
@@ -153,21 +153,25 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             pos_y = 900 if group_idx % 2 else 860
             
             # Build sentence timing (first word start to last word end)
-            # Note: overlap fix already handles timing adjustments
             start_time = self._seconds_to_ass_time(word_group[0]['start'])
-            end_time = self._seconds_to_ass_time(word_group[-1]['end'])  # No additional buffer needed
+            end_time = self._seconds_to_ass_time(word_group[-1]['end'])
             
-            # Build karaoke text with \\k tags
-            karaoke_text = f"\\\\pos({self.center_x},{pos_y})"
+            # Build karaoke text with proper libass format
+            # Start with positioning
+            karaoke_parts = [f"{{\\\\pos({self.center_x},{pos_y})}}"]
             
+            # Add each word with its karaoke timing in curly braces
             for word in word_group:
                 duration_cs = round((word['end'] - word['start']) * 100)  # Convert to centiseconds
                 clean_word = self._escape_ass_text(word['word'])
                 
-                # Add karaoke tag for this word
-                karaoke_text += f"\\\\k{duration_cs}{clean_word} "
+                # Proper libass karaoke format: {\k<duration>}word
+                karaoke_parts.append(f"{{\\\\k{duration_cs}}}{clean_word}")
             
-            # Create single dialogue line with Effect: Karaoke
+            # Join with spaces between words
+            karaoke_text = "".join(karaoke_parts[0:1]) + " ".join(karaoke_parts[1:])
+            
+            # Create single dialogue line with Effect: Karaoke (enables karaoke parsing)
             event_line = f"Dialogue: 0,{start_time},{end_time},KActive,,0,0,0,Karaoke,{karaoke_text}"
             events.append(event_line)
         
