@@ -157,19 +157,19 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             end_time = self._seconds_to_ass_time(word_group[-1]['end'])
             
             # Build karaoke text with proper libass format
-            # Start with positioning
-            karaoke_parts = [f"{{\\\\pos({self.center_x},{pos_y})}}"]
+            # Start with positioning block (single backslash for proper ASS output)
+            karaoke_text = f"{{\\pos({self.center_x},{pos_y})}}"
             
-            # Add each word with its karaoke timing in curly braces
+            # Add each word with its karaoke timing in individual override blocks
             for word in word_group:
                 duration_cs = round((word['end'] - word['start']) * 100)  # Convert to centiseconds
                 clean_word = self._escape_ass_text(word['word'])
                 
-                # Proper libass karaoke format: {\k<duration>}word
-                karaoke_parts.append(f"{{\\\\k{duration_cs}}}{clean_word}")
+                # Proper libass karaoke format: {\k<duration>}word (single backslash)
+                karaoke_text += f"{{\\k{duration_cs}}}{clean_word} "
             
-            # Join with spaces between words
-            karaoke_text = "".join(karaoke_parts[0:1]) + " ".join(karaoke_parts[1:])
+            # Remove trailing space
+            karaoke_text = karaoke_text.rstrip()
             
             # Create single dialogue line with Effect: Karaoke (enables karaoke parsing)
             event_line = f"Dialogue: 0,{start_time},{end_time},KActive,,0,0,0,Karaoke,{karaoke_text}"
