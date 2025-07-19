@@ -1,0 +1,9 @@
+# Enterprise karaoke caption dependencies
+spacy>=3.7.0
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+requests>=2.31.0
+
+# Optional: for advanced NLP processing
+# en-core-web-md @ https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.7.1/en_core_web_md-3.7.1-py3-none-any.whl
+
+# Note: pathlib, json, subprocess, tempfile are built-in Python modules

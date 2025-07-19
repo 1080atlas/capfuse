@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  capfuse:
+    build: .
+    ports:
+      - "3000:3000"  # Next.js
+      - "3001:3001"  # Express API
+    volumes:
+      - ./tmp:/app/tmp
+      - ./output:/app/output
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped

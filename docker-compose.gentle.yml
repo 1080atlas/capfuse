@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  gentle:
+    image: lowerquality/gentle:latest
+    ports:
+      - "8765:8765"
+    volumes:
+      - ./tmp:/tmp/gentle
+    environment:
+      - GENTLE_DEBUG=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Keep existing services if needed
+  capfuse:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - gentle
+    environment:
+      - GENTLE_URL=http://gentle:8765
